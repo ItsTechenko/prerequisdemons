@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conditions de Promotion — Armée des Démons</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --purple:  #6b1fa8;
+            --purple2: #9b4dca;
+            --blood:   #8b0000;
+            --blood2:  #c0392b;
+            --gold:    #d4af37;
+            --gold2:   #f0d060;
+            --dark:    #04020a;
+            --dark2:   #0a0514;
+            --dark3:   #120820;
+            --light:   #e8ddf5;
+            --grey:    #777;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark2) 50%, #070310 100%);
+            color: var(--light);
+            font-family: 'Georgia', 'Times New Roman', serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ── Particules ── */
+        .particle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: drift linear infinite;
+            opacity: 0;
+        }
+        @keyframes drift {
+            0%   { transform: translateY(100vh) translateX(0);    opacity: 0; }
+            10%  { opacity: 0.6; }
+            90%  { opacity: 0.3; }
+            100% { transform: translateY(-10vh) translateX(20px); opacity: 0; }
+        }
+
+        /* ── Lueur supérieure ── */
+        .top-glow {
+            position: fixed; top: 0; left: 0; right: 0; height: 200px;
+            background: linear-gradient(180deg, rgba(107,31,168,0.35) 0%, transparent 100%);
+            pointer-events: none; z-index: 0;
+            animation: glowPulse 4s ease-in-out infinite;
+        }
+        .bottom-glow {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 120px;
+            background: linear-gradient(0deg, rgba(139,0,0,0.2) 0%, transparent 100%);
+            pointer-events: none; z-index: 0;
+        }
+        @keyframes glowPulse {
+            0%,100% { opacity: 0.7; }
+            50%      { opacity: 1; }
+        }
+
+        /* ── Contenu principal ── */
+        .wrapper {
+            position: relative; z-index: 1;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 60px 24px 80px;
+        }
+
+        /* ── En-tête ── */
+        .site-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .site-header .kamon {
+            font-size: 64px;
+            line-height: 1;
+            margin-bottom: 12px;
+            text-shadow: 0 0 30px rgba(107,31,168,0.9), 0 0 60px rgba(107,31,168,0.4);
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+        .site-header h1 {
+            font-size: clamp(20px, 4vw, 34px);
+            font-weight: 700;
+            color: var(--purple2);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(155,77,202,0.7);
+            margin-bottom: 8px;
+        }
+        .site-header .subtitle {
+            font-size: 16px;
+            color: var(--gold);
+            letter-spacing: 3px;
+            font-style: italic;
+            text-shadow: 0 0 10px rgba(212,175,55,0.5);
+        }
+        .divider-purple {
+            margin: 20px auto;
+            width: 320px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--purple2), transparent);
+        }
+        .divider-gold {
+            margin: 20px auto;
+            width: 200px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        /* ── Note importante ── */
+        .notice {
+            background: linear-gradient(135deg, rgba(107,31,168,0.12), rgba(139,0,0,0.08));
+            border: 1px solid rgba(155,77,202,0.35);
+            border-left: 4px solid var(--purple2);
+            border-radius: 6px;
+            padding: 18px 24px;
+            margin-bottom: 50px;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #c0b0d8;
+        }
+        .notice strong { color: var(--gold2); }
+
+        /* ── Hiérarchie ── */
+        .hierarchy {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .hierarchy h2 {
+            font-size: 14px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--grey);
+            margin-bottom: 20px;
+        }
+        .rank-chain {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
+        }
+        .rank-pill {
+            background: linear-gradient(135deg, rgba(107,31,168,0.2), rgba(60,10,100,0.4));
+            border: 1px solid rgba(107,31,168,0.5);
+            border-radius: 4px;
+            padding: 6px 14px;
+            font-size: 13px;
+            color: var(--light);
+            letter-spacing: 1px;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .rank-pill:hover {
+            border-color: var(--purple2);
+            color: var(--gold2);
+            box-shadow: 0 0 12px rgba(107,31,168,0.5);
+        }
+        .rank-pill.special {
+            border-color: rgba(212,175,55,0.6);
+            color: var(--gold2);
+        }
+        .rank-arrow {
+            color: var(--purple);
+            font-size: 16px;
+            padding: 0 6px;
+            opacity: 0.7;
+        }
+
+        /* ── Section titre ── */
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .section-title h2 {
+            font-size: 22px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--gold);
+            text-shadow: 0 0 12px rgba(212,175,55,0.4);
+        }
+
+        /* ── Cartes de grade ── */
+        .grade-list {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .grade-card {
+            background: linear-gradient(135deg, rgba(10,5,20,0.92), rgba(18,8,30,0.92));
+            border: 1px solid rgba(107,31,168,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.6), 0 0 0 1px rgba(107,31,168,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .grade-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.7), 0 0 20px rgba(107,31,168,0.2);
+        }
+
+        .grade-header {
+            background: linear-gradient(135deg, rgba(50,10,90,0.8), rgba(35,5,70,0.9));
+            border-bottom: 1px solid rgba(107,31,168,0.4);
+            padding: 16px 28px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .grade-header .arrow-badge {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(155,77,202,0.5);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: var(--purple2);
+            flex-shrink: 0;
+            font-weight: 700;
+        }
+        .grade-header .from-to {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--light);
+            letter-spacing: 2px;
+        }
+        .grade-header .from-to span.arrow {
+            color: var(--purple2);
+            margin: 0 10px;
+        }
+        .grade-header .from-to span.rank-name {
+            color: var(--purple2);
+            text-shadow: 0 0 8px rgba(155,77,202,0.5);
+        }
+
+        .grade-body {
+            padding: 20px 28px;
+        }
+        .req-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .req-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #c0b0d8;
+        }
+        .req-list li .bullet {
+            color: var(--purple2);
+            font-size: 14px;
+            line-height: 1.6;
+            flex-shrink: 0;
+        }
+        .req-list li.highlight {
+            color: var(--light);
+            font-weight: 600;
+        }
+        .req-list li.highlight .bullet {
+            color: var(--blood2);
+        }
+        .req-tag {
+            display: inline-block;
+            background: rgba(139,0,0,0.25);
+            border: 1px solid rgba(192,57,43,0.5);
+            border-radius: 3px;
+            padding: 1px 8px;
+            font-size: 12px;
+            color: #e07070;
+            letter-spacing: 1px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+        .req-tag.purple {
+            background: rgba(107,31,168,0.2);
+            border-color: rgba(155,77,202,0.5);
+            color: var(--purple2);
+        }
+        .req-tag.gold {
+            background: rgba(212,175,55,0.1);
+            border-color: rgba(212,175,55,0.4);
+            color: var(--gold2);
+        }
+
+        /* Carte Lune Supérieure spéciale */
+        .grade-card.supreme {
+            border-color: rgba(212,175,55,0.4);
+            box-shadow: 0 4px 32px rgba(0,0,0,0.7), 0 0 20px rgba(212,175,55,0.08);
+        }
+        .grade-card.supreme .grade-header {
+            background: linear-gradient(135deg, rgba(80,55,0,0.6), rgba(50,35,0,0.85));
+            border-bottom-color: rgba(212,175,55,0.5);
+        }
+        .grade-card.supreme .grade-header .arrow-badge {
+            border-color: rgba(212,175,55,0.7);
+            color: var(--gold2);
+        }
+        .grade-card.supreme .grade-header .from-to {
+            color: var(--gold2);
+        }
+        .grade-card.supreme .grade-header .from-to span.arrow {
+            color: var(--gold);
+        }
+
+        /* ── Pied de page ── */
+        .site-footer {
+            text-align: center;
+            margin-top: 70px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(107,31,168,0.2);
+            color: var(--grey);
+            font-size: 13px;
+            font-style: italic;
+            line-height: 1.8;
+        }
+        .site-footer .kamon-small {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 10px;
+            opacity: 0.4;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-glow"></div>
+<div class="bottom-glow"></div>
+
+<script>
+    const colors = ['#9b4dca','#8b0000','#6b1fa8','#c0392b'];
+    for (let i = 0; i < 22; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const c = colors[Math.floor(Math.random() * colors.length)];
+        const s = Math.random() > 0.6 ? 3 : 2;
+        p.style.cssText = `
+            left:${Math.random()*100}vw;
+            width:${s}px; height:${s}px;
+            background:${c};
+            box-shadow:0 0 5px ${c};
+            animation-duration:${9 + Math.random()*14}s;
+            animation-delay:${Math.random()*14}s;
+        `;
+        document.body.appendChild(p);
+    }
+</script>
+
+<div class="wrapper">
+
+    <!-- En-tête -->
+    <header class="site-header">
+        <div class="kamon">🌙</div>
+        <h1>Armée des Démons de Muzan</h1>
+        <div class="subtitle">Conditions Officielles de Promotion</div>
+        <div class="divider-purple"></div>
+    </header>
+
+    <!-- Note importante -->
+    <div class="notice">
+        <strong>⚠ Note importante —</strong>
+        Les <strong>responsables de clans</strong> sont libres d'ajouter d'autres prérequis supplémentaires
+        à ceux listés ci-dessous, selon les besoins de leur clan et les circonstances rencontrées en jeu.
+        Toute promotion reste soumise à la validation d'un supérieur compétent.
+    </div>
+
+    <!-- Hiérarchie -->
+    <div class="hierarchy">
+        <h2>— Hiérarchie des rangs —</h2>
+        <div class="rank-chain">
+            <span class="rank-pill">Rang E</span>
+            <span class="rank-arrow">▸</span>
+            <span class="rank-pill">Rang D</span>
+            <span class="rank-arrow">▸</span>
+            <span class="rank-pill">Rang C</span>
+            <span class="rank-arrow">▸</span>
+            <span class="rank-pill">Rang B</span>
+            <span class="rank-arrow">▸</span>
+            <span class="rank-pill">Rang A</span>
+            <span class="rank-arrow">▸</span>
+            <span class="rank-pill">Rang A+</span>
+            <span class="rank-arrow">▸</span>
+            <span class="rank-pill">Rang S</span>
+            <span class="rank-arrow">▸</span>
+            <span class="rank-pill">Rang S+</span>
+            <span class="rank-arrow">▸</span>
+            <span class="rank-pill">Rang X</span>
+            <span class="rank-arrow">▸</span>
+            <span class="rank-pill">Lune Inférieure</span>
+            <span class="rank-arrow">▸</span>
+            <span class="rank-pill special">Lune Supérieure</span>
+        </div>
+    </div>
+
+    <!-- Conditions -->
+    <div class="section-title">
+        <h2>Conditions de Promotion</h2>
+        <div class="divider-gold"></div>
+    </div>
+
+    <div class="grade-list">
+
+        <!-- Rang E → Rang D -->
+        <div class="grade-card">
+            <div class="grade-header">
+                <div class="arrow-badge">I</div>
+                <div class="from-to">
+                    <span class="rank-name">Rang E</span>
+                    <span class="arrow">→</span>
+                    <span class="rank-name">Rang D</span>
+                </div>
+            </div>
+            <div class="grade-body">
+                <ul class="req-list">
+                    <li><span class="bullet">◆</span> 3 jours d'attente</li>
+                    <li><span class="bullet">◆</span> 3 rapports d'activité</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Rang D → Rang C -->
+        <div class="grade-card">
+            <div class="grade-header">
+                <div class="arrow-badge">II</div>
+                <div class="from-to">
+                    <span class="rank-name">Rang D</span>
+                    <span class="arrow">→</span>
+                    <span class="rank-name">Rang C</span>
+                </div>
+            </div>
+            <div class="grade-body">
+                <ul class="req-list">
+                    <li><span class="bullet">◆</span> 5 jours d'attente</li>
+                    <li><span class="bullet">◆</span> 4 rapports d'activité</li>
+                    <li><span class="bullet">◆</span> Participer à un entraînement</li>
+                    <li><span class="bullet">◆</span> Rejoindre un clan</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Rang C → Rang B -->
+        <div class="grade-card">
+            <div class="grade-header">
+                <div class="arrow-badge">III</div>
+                <div class="from-to">
+                    <span class="rank-name">Rang C</span>
+                    <span class="arrow">→</span>
+                    <span class="rank-name">Rang B</span>
+                </div>
+            </div>
+            <div class="grade-body">
+                <ul class="req-list">
+                    <li><span class="bullet">◆</span> 1 semaine d'attente</li>
+                    <li><span class="bullet">◆</span> 5 rapports d'activité</li>
+                    <li><span class="bullet">◆</span> Participer à 3 entraînements ou cours</li>
+                    <li><span class="bullet">◆</span> Former un Jeune Démon (ou plus)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Rang B → Rang A -->
+        <div class="grade-card">
+            <div class="grade-header">
+                <div class="arrow-badge">IV</div>
+                <div class="from-to">
+                    <span class="rank-name">Rang B</span>
+                    <span class="arrow">→</span>
+                    <span class="rank-name">Rang A</span>
+                </div>
+            </div>
+            <div class="grade-body">
+                <ul class="req-list">
+                    <li><span class="bullet">◆</span> 1 semaine et 2 jours d'attente</li>
+                    <li><span class="bullet">◆</span> 6 rapports d'activité</li>
+                    <li><span class="bullet">◆</span> Participer à 4 entraînements ou cours</li>
+                    <li><span class="bullet">◆</span> Tuer 2 Pourfendeurs de rang équivalent <span class="req-tag">Kanoe</span></li>
+                    <li><span class="bullet">◆</span> Former un Jeune Démon (ou plus)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Rang A → Rang A+ -->
+        <div class="grade-card">
+            <div class="grade-header">
+                <div class="arrow-badge">V</div>
+                <div class="from-to">
+                    <span class="rank-name">Rang A</span>
+                    <span class="arrow">→</span>
+                    <span class="rank-name">Rang A+</span>
+                </div>
+            </div>
+            <div class="grade-body">
+                <ul class="req-list">
+                    <li><span class="bullet">◆</span> 12 jours d'attente</li>
+                    <li><span class="bullet">◆</span> 7 rapports d'activité</li>
+                    <li><span class="bullet">◆</span> Participer à 4 entraînements ou cours</li>
+                    <li><span class="bullet">◆</span> Tuer 3 Pourfendeurs de rang équivalent <span class="req-tag">Tsuchinoto</span></li>
+                    <li><span class="bullet">◆</span> Capturer un Pourfendeur de rang équivalent <span class="req-tag">Tsuchinoto</span></li>
+                    <li><span class="bullet">◆</span> Former un Jeune Démon (ou plus)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Rang A+ → Rang S -->
+        <div class="grade-card">
+            <div class="grade-header">
+                <div class="arrow-badge">VI</div>
+                <div class="from-to">
+                    <span class="rank-name">Rang A+</span>
+                    <span class="arrow">→</span>
+                    <span class="rank-name">Rang S</span>
+                </div>
+            </div>
+            <div class="grade-body">
+                <ul class="req-list">
+                    <li><span class="bullet">◆</span> 15 jours d'attente</li>
+                    <li><span class="bullet">◆</span> 8 rapports d'activité</li>
+                    <li><span class="bullet">◆</span> Organiser, sous la supervision d'un supérieur, un entraînement ou cours</li>
+                    <li><span class="bullet">◆</span> Tuer 3 Pourfendeurs de rang équivalent <span class="req-tag">Tsuchinoe</span></li>
+                    <li><span class="bullet">◆</span> Capturer 2 Pourfendeurs de rang équivalent <span class="req-tag">Tsuchinoe</span></li>
+                    <li><span class="bullet">◆</span> Former un Jeune Démon (ou plus)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Rang S → Rang S+ -->
+        <div class="grade-card">
+            <div class="grade-header">
+                <div class="arrow-badge">VII</div>
+                <div class="from-to">
+                    <span class="rank-name">Rang S</span>
+                    <span class="arrow">→</span>
+                    <span class="rank-name">Rang S+</span>
+                </div>
+            </div>
+            <div class="grade-body">
+                <ul class="req-list">
+                    <li><span class="bullet">◆</span> 15 jours d'attente</li>
+                    <li><span class="bullet">◆</span> 9 rapports d'activité</li>
+                    <li><span class="bullet">◆</span> Organiser, sous la supervision d'un supérieur, 2 entraînements ou cours</li>
+                    <li><span class="bullet">◆</span> Tuer 5 Pourfendeurs <span class="req-tag">Hinoto</span></li>
+                    <li><span class="bullet">◆</span> Former un Jeune Démon (ou plus)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Rang S+ → Rang X -->
+        <div class="grade-card">
+            <div class="grade-header">
+                <div class="arrow-badge">VIII</div>
+                <div class="from-to">
+                    <span class="rank-name">Rang S+</span>
+                    <span class="arrow">→</span>
+                    <span class="rank-name">Rang X</span>
+                </div>
+            </div>
+            <div class="grade-body">
+                <ul class="req-list">
+                    <li><span class="bullet">◆</span> 15 jours d'attente</li>
+                    <li><span class="bullet">◆</span> 10 rapports d'activité</li>
+                    <li><span class="bullet">◆</span> Organiser, sous la supervision d'un supérieur, 3 entraînements ou cours</li>
+                    <li><span class="bullet">◆</span> Tuer 2 Pourfendeurs <span class="req-tag">Hinoe</span></li>
+                    <li><span class="bullet">◆</span> Capturer 2 Pourfendeurs <span class="req-tag">Hinoe</span></li>
+                    <li><span class="bullet">◆</span> Former un Jeune Démon (ou plus)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Rang X → Lune Inférieure -->
+        <div class="grade-card">
+            <div class="grade-header">
+                <div class="arrow-badge">IX</div>
+                <div class="from-to">
+                    <span class="rank-name">Rang X</span>
+                    <span class="arrow">→</span>
+                    <span class="rank-name">Lune Inférieure</span>
+                </div>
+            </div>
+            <div class="grade-body">
+                <ul class="req-list">
+                    <li><span class="bullet">◆</span> 11 rapports d'activité</li>
+                    <li><span class="bullet">◆</span> Participer à un combat contre un Kinoto avec un supérieur</li>
+                    <li><span class="bullet">◆</span> Organiser, sous la supervision d'un supérieur, 4 entraînements ou cours</li>
+                    <li><span class="bullet">◆</span> Former un Jeune Démon (ou plus)</li>
+                    <li class="highlight"><span class="bullet">◆</span> Mérite reconnu <span class="req-tag gold">Mérite</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Lune Inférieure → Lune Supérieure -->
+        <div class="grade-card supreme">
+            <div class="grade-header">
+                <div class="arrow-badge">X</div>
+                <div class="from-to">
+                    <span style="color:var(--light);">Lune Inférieure</span>
+                    <span class="arrow">→</span>
+                    <span style="color:var(--gold2);text-shadow:0 0 12px rgba(212,175,55,0.6);">Lune Supérieure</span>
+                </div>
+            </div>
+            <div class="grade-body">
+                <ul class="req-list">
+                    <li><span class="bullet">◆</span> 12 rapports d'activité</li>
+                    <li class="highlight"><span class="bullet">◆</span> Tuer <strong>et</strong> capturer un Kinoe</li>
+                    <li class="highlight"><span class="bullet">◆</span> Approbation du Maître <span class="req-tag gold">Maître</span></li>
+                    <li><span class="bullet">◆</span> Organiser, sous la supervision d'une Lune Supérieure, 5 entraînements ou cours</li>
+                    <li><span class="bullet">◆</span> Former un Jeune Démon (ou plus)</li>
+                    <li class="highlight"><span class="bullet">◆</span> Mérite exceptionnel reconnu <span class="req-tag gold">Mérite</span></li>
+                </ul>
+            </div>
+        </div>
+
+    </div><!-- /grade-list -->
+
+    <!-- Pied de page -->
+    <footer class="site-footer">
+        <span class="kamon-small">🌙</span>
+        Document officiel de l'Armée des Démons de Muzan<br>
+        Toute modification doit être approuvée par le Maître ou une Lune Supérieure en exercice.
+    </footer>
+
+</div><!-- /wrapper -->
+
+</body>
+</html>
